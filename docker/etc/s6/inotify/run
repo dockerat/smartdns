@@ -19,5 +19,8 @@ while read -r directory events filename; do
     if [ -n "$ids" ]; then
         echo "停止进程: $ids"
         kill "$ids"
+
+        # 暂停一秒
+        sleep 2
     fi
 done
