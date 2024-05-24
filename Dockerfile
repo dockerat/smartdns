@@ -1,6 +1,6 @@
 FROM pikuzheng/smartdns AS dns
 
-FROM ccr.ccs.tencentyun.com/storezhang/alpine:3.19.1 AS builder
+FROM ccr.ccs.tencentyun.com/storezhang/alpine:3.20.0 AS builder
 
 COPY docker /docker
 COPY --from=dns /usr/sbin/smartdns /docker/usr/sbin/smartdns
@@ -11,7 +11,7 @@ RUN chmod +x /docker/etc/s6/smartdns/*
 
 
 # 打包真正的镜像
-FROM ccr.ccs.tencentyun.com/storezhang/alpine:3.19.1
+FROM ccr.ccs.tencentyun.com/storezhang/alpine:3.20.0
 
 
 LABEL author="storezhang<张宗良>" \
