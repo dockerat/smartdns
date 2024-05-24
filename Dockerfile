@@ -5,7 +5,8 @@ FROM ccr.ccs.tencentyun.com/storezhang/alpine:3.19.1 AS builder
 COPY docker /docker
 COPY --from=dns /usr/sbin/smartdns /docker/usr/sbin/smartdns
 
-RUN chmod +x /docker/etc/s6/dnsabre/*
+RUN chmod +x /docker/etc/s6/inotify/*
+RUN chmod +x /docker/etc/s6/smartdns/*
 
 
 
@@ -17,7 +18,7 @@ LABEL author="storezhang<张宗良>" \
     email="storezhang@gmail.com" \
     qq="160290688" \
     wechat="storezhang" \
-    description="Dnsabre，用于私有网络域名解析服务"
+    description="指定文件后，根据配置文件是否有变化来决定是否重启程序达到随时解析更新"
 
 
 COPY --from=builder /docker /
