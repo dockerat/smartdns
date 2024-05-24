@@ -1,0 +1,84 @@
+kind: secret
+name: password_ccr
+get:
+  path: secrets
+  name: password_ccr
+---
+
+kind: secret
+name: feishu_id
+get:
+  path: secrets
+  name: feishu_id
+---
+
+kind: secret
+name: feishu_secret
+get:
+  path: secrets
+  name: feishu_secret
+---
+
+
+kind: pipeline
+type: docker
+name: 发布
+
+
+clone:
+  disable: true
+
+
+environment:
+  NAME: nginx
+  DOCKER_REGISTRY: ccr.ccs.tencentyun.com
+  DOCKER_REPOSITORY: storezhang/nginx
+  TAG: 0.0.$${DRONE_BUILD_NUMBER}
+
+
+steps:
+  - name: 代码
+    image: ccr.ccs.tencentyun.com/dronestock/git
+    pull: always
+
+  - name: 发布
+    image: ccr.ccs.tencentyun.com/dronestock/docker
+    pull: always
+    privileged: true
+    volumes:
+      - name: docker
+        path: /var/lib/docker
+    environment:
+      PASSWORD_DOCKER:
+        from_secret: token_docker
+      PASSWORD_CCR:
+        from_secret: password_tencentyun_ccr
+    settings:
+      repository: $${DOCKER_REPOSITORY}
+      tag: $${TAG}
+      registries:
+        - username: storezhang
+          password: $${PASSWORD_DOCKER}
+        - hostname: ccr.ccs.tencentyun.com
+          username: "160290688"
+          password: $${PASSWORD_CCR}
+          required: true
+
+  - name: 通知
+    image: ccr.ccs.tencentyun.com/dronestock/feishu
+    pull: always
+    when:
+      status:
+        - success
+        - failure
+    settings:
+      id:
+        from_secret: feishu_id
+      secret:
+        from_secret: feishu_secret
+
+
+volumes:
+  - name: docker
+    host:
+      path: /var/lib/cache/docker
