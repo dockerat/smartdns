@@ -1,15 +1,26 @@
-FROM ccr.ccs.tencentyun.com/storezhang/alpine:3.20.0
+FROM pikuzheng/smartdns AS dns
+
+FROM ccr.ccs.tencentyun.com/storezhang/alpine:3.19.1 AS builder
+
+COPY docker /docker
+COPY --from=dns /usr/sbin/smartdns /docker/usr/sbin/smartdns
+
+RUN chmod +x /docker/etc/s6/dnsabre/*
 
 
-LABEL author="storezhang<华寅>" \
-email="storezhang@gmail.com" \
-qq="160290688" \
-wechat="storezhang" \
-description="动态域名解析，支持阿里云、百度云、腾讯云、DNSPod等"
+
+# 打包真正的镜像
+FROM ccr.ccs.tencentyun.com/storezhang/alpine:3.19.1
 
 
-# 复制文件
-COPY docker /
+LABEL author="storezhang<张宗良>" \
+    email="storezhang@gmail.com" \
+    qq="160290688" \
+    wechat="storezhang" \
+    description="Dnsabre，用于私有网络域名解析服务"
+
+
+COPY --from=builder /docker /
 
 
 RUN set -ex \
@@ -18,12 +29,13 @@ RUN set -ex \
     \
     && apk update \
     \
-    # 增加执行权限，防止出现因为无执行权限导致在Docker内部无法运行的问题
-    && chmod +x /etc/s6/ddns/* \
-    \
-    # 增加执行权限
-    && chmod +x /opt/storezhang/ddns \
+    && apk add --no-cache inotify-tools \
     \
     \
     \
     && rm -rf /var/cache/apk/*
+
+
+ENV SMARTDNS_HOME ${USER_HOME}
+ENV CONFIG_HOME ${SMARTDNS_HOME}/work
+ENV CONFIG_FILEPATH ${SMARTDNS_HOME}/work/dns.conf

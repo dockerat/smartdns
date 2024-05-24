@@ -1,0 +1,23 @@
+#!/bin/bash
+
+#!/bin/bash
+
+# 目标目录
+directory="${CONFIG_HOME}"
+
+# 要监控的事件
+events="modify,create,delete,move"
+
+# 要杀死的进程名
+process="smartdns"
+
+# 监控目录变化并执行命令
+inotifywait --monitor --recursive --event "$events" "$directory" |
+while read -r directory events filename; do
+    # 杀死指定进程
+    ids=$(pidof "$process")
+    if [ -n "$ids" ]; then
+        echo "停止进程: $ids"
+        kill "$ids"
+    fi
+done

@@ -1,4 +1,4 @@
-# 项目
+# Smartdns
 
 ![仓库大小](https://img.shields.io/github/repo-size/pangum/pangu)
 ![Docker镜像版本](https://img.shields.io/docker/v/storezhang/ddns)
@@ -9,7 +9,7 @@
 ![最佳语言](https://img.shields.io/github/languages/top/pangum/pangu)
 ![星星个数](https://img.shields.io/github/stars/pangum/pangu?style=social)
 
-项目介绍
+指定文件后，根据配置文件是否有变化来决定是否重启程序达到随时解析更新
 
 ## 捐助
 
